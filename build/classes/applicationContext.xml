@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+<!--配置数据源  -->
+	<bean id="dataSource"
+		class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName"
+			value="com.mysql.jdbc.Driver">
+		</property>
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/echarts">
+		</property>
+		<property name="username" value="root"></property>
+		<property name="password" value="root"></property>
+	</bean>
+	
+	
+	<!--配置数据源SqlsessionFactoryBean -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+	</bean>
+	
+
+	
+	<!-- 配置dao-->
+		<bean  class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="mapper"/>
+	</bean>
+	
+ <!-- 扫描注解定义业务类的bean-->
+	<context:component-scan base-package="service"/>
+	
+	
+
+	
+		<!--事务管理 -->
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<property name="dataSource">
+	<ref bean="dataSource" />
+	</property>
+	</bean>
+	<!--事务增强 -->
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+	<tx:attributes>
+	<tx:method name="find*" read-only="true"/>
+	<tx:method name="search*" read-only="true"/>
+	<tx:method name="query*" read-only="true"/>
+	<tx:method name="get*" read-only="true"/>
+	<tx:method name="edit*" propagation="REQUIRED"/>
+	<tx:method name="add*" propagation="REQUIRED"/>
+	<tx:method name="register" propagation="REQUIRED"/>
+	<tx:method name="del*" propagation="REQUIRED"/>
+	<tx:method name="update*" propagation="REQUIRED"/>
+	<tx:method name="do*" propagation="REQUIRED"/>
+	<tx:method name="*" propagation="REQUIRED" read-only="true"/>
+	</tx:attributes>
+	
+	</tx:advice>
+	
+<!-- 定义切面 -->
+	
+	 <aop:config>
+	<!-- 切入点 -->
+	<aop:pointcut id="serviceMethod" expression="execution(* service..*.*(..))" />
+	<!-- 事务增强与切入点组合 -->
+	<aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethod"/>
+	</aop:config>
+
+	 </beans>

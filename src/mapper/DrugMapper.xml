@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="mapper.DrugMapper" ><!-- 命名空间就是接口类的完全路径 -->
+
+<!-- colunn数据库的列，property是pojo的属性名称 -->
+
+  <resultMap id="BaseResultMap" type="pojo.Drug" >
+    <id column="drugId" property="drugId" jdbcType="INTEGER" />
+    <result column="drugName" property="drugName" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="INTEGER" />
+  </resultMap>
+
+  <select id="qureDrugList" resultMap="BaseResultMap">
+    select * from drug
+    
+  </select> 
+  
+ 
+ 
+<!-- <select id="qureDrugList" resultType="pojo.Drug">
+    select * from drug
+    
+  </select>  -->
+
+</mapper>
